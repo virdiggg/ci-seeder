@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-defined('SEEDER_PATH') or define('SEEDER_PATH', APPPATH . 'migrations' . DIRECTORY_SEPARATOR . 'seeders');
+defined('SEEDER_PATH') or define('SEEDER_PATH', APPPATH . 'migrations');
 
 /**
  * Create seeder file for CodeIgniter 3 from already existing table.
@@ -70,14 +70,14 @@ class Seeder
 
     /**
      * Create a simple seeder file.
-     * 
+     *
      * @param string $name Table name
-     * 
+     *
      * @return object
      */
-    public function seed($name = '')
+    public function seed($name = null)
     {
-        if (!$name){
+        if (!$name) {
             return (object) [
                 'status' => false,
                 'message' => 'PARAMETER NOT FOUND.',
@@ -94,7 +94,7 @@ class Seeder
         $results = $this->db->select()->from(trim($name))
             ->get()->result_array();
 
-        if (count($results) === 0){
+        if (count($results) === 0) {
             return (object) [
                 'status' => false,
                 'message' => 'NO RECORDS IN TABLE "' . $name . '".',
@@ -105,7 +105,7 @@ class Seeder
         $keys = array_keys($results[0]);
 
         $print = "<?php defined('BASEPATH') OR exit('No direct script access allowed');" . PHP_EOL . PHP_EOL;
-        $print .= "Class Seeder_" . $name . " extends CI_Migration {" . PHP_EOL;
+        $print .= "Class Migration_Seeder_" . $name . " extends CI_Migration {" . PHP_EOL;
         $print .= '    /**' . PHP_EOL;
         $print .= '     * Private function db connection.' . PHP_EOL;
         $print .= '     * ' . PHP_EOL;
@@ -127,11 +127,17 @@ class Seeder
             $print .= "        ];" . PHP_EOL; // end $param[]
         }
         $print .= PHP_EOL . '        $this->' . $this->getConn() . '->insert_batch(\'' . $name . '\', $param);' . PHP_EOL;
-        $print .= "    }" . PHP_EOL; // end public function up()
+        $print .= "    }" . PHP_EOL . PHP_EOL; // end public function up()
+        $print .= "    public function down() {" . PHP_EOL;
+        $print .= '        $this->db->truncate(\'' . $name . '\');' . PHP_EOL;
+        $print .= "    }" . PHP_EOL; // end public function down()
         $print .= "}"; // end class
 
+        // Get the latest migration file order.
+        $count = $this->latest($this->getPath());
+
         // Create seeder file.
-        $this->createFile($this->getPath(), 'Seeder_' . $name . '.php');
+        $this->createFile($this->getPath(), $count . '_seeder_' . $name . '.php');
 
         // Write to newly created seeder file.
         fwrite($this->filePointer, $print . PHP_EOL);
@@ -194,10 +200,80 @@ class Seeder
     }
 
     /**
-     * Set path to seeder folder.
-     * 
+     * Return the remainder of a string after the last occurrence of a given value.
+     * Stolen from laravel helper.
+     *
+     * @param  string  $subject
+     * @param  string  $search
+     * @return string
+     */
+    private function afterLast($subject, $search)
+    {
+        if ($search === '') {
+            return $subject;
+        }
+
+        $position = strrpos($subject, (string) $search);
+
+        if ($position === false) {
+            return $subject;
+        }
+
+        return substr($subject, $position + strlen($search));
+    }
+
+    /**
+     * Get the portion of a string before the first occurrence of a given value.
+     * Stolen from laravel helper.
+     *
+     * @param  string  $subject
+     * @param  string  $search
+     * @return string
+     */
+    private function before($subject, $search)
+    {
+        if ($search === '') {
+            return $subject;
+        }
+
+        $result = strstr($subject, (string) $search, true);
+
+        return $result === false ? $subject : $result;
+    }
+
+    /**
+     * Get latest migration order.
+     * Default is sequential, if there is no migration file exist.
+     *
      * @param string $path
-     * 
+     *
+     * @return string
+     */
+    private function latest($path)
+    {
+        // Get all migration files.
+        $seeders = $path . '*.php';
+        $globs = array_filter(glob($seeders), 'is_file');
+        if (count($globs) > 0) {
+            // Reverse the array.
+            rsort($globs);
+
+            // Get the latest array order.
+            $latestMigration = (int) $this->before($this->afterLast($globs[0], '\\'), '_');
+            $count = $latestMigration + 1;
+        } else {
+            // Default is sequential order, not timestamp.
+            $count = '001';
+        }
+
+        return $count;
+    }
+
+    /**
+     * Set path to seeder folder.
+     *
+     * @param string $path
+     *
      * @return void
      */
     public function setPath($path = SEEDER_PATH)
@@ -210,9 +286,9 @@ class Seeder
 
     /**
      * Set which connection used for this seeder.
-     * 
+     *
      * @param string $conn
-     * 
+     *
      * @return void
      */
     public function setConn($conn = 'default')
@@ -222,7 +298,7 @@ class Seeder
 
     /**
      * Get path to seeder folder. Default to constant SEEDER_PATH.
-     * 
+     *
      * @return string
      */
     private function getPath()
@@ -232,7 +308,7 @@ class Seeder
 
     /**
      * Get which connection used for seeder. Default is 'default'.
-     * 
+     *
      * @return string
      */
     private function getConn()
