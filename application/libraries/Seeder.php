@@ -129,7 +129,7 @@ class Seeder
         $print .= PHP_EOL . '        $this->' . $this->getConn() . '->insert_batch(\'' . $name . '\', $param);' . PHP_EOL;
         $print .= "    }" . PHP_EOL . PHP_EOL; // end public function up()
         $print .= "    public function down() {" . PHP_EOL;
-        $print .= '        $this->db->truncate(\'' . $name . '\');' . PHP_EOL;
+        $print .= '        $this->' . $this->getConn() . '->truncate(\'' . $name . '\');' . PHP_EOL;
         $print .= "    }" . PHP_EOL; // end public function down()
         $print .= "}"; // end class
 
