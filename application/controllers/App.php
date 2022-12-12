@@ -27,11 +27,6 @@ class App extends CI_Controller
 		// $this->seeder->setPath(APPPATH);
         $res = $this->seeder->seed($table);
 
-		if (!$res->status) {
-			echo $res->message.PHP_EOL;
-			return;
-		}
-
 		echo $res->message.PHP_EOL;
 		return;
 	}
