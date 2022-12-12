@@ -75,7 +75,7 @@ class Seeder
      *
      * @return object
      */
-    public function seed($name = null)
+    public function seed($name = '')
     {
         if (!$name) {
             return (object) [
