@@ -112,9 +112,16 @@ class Seeder
         $print .= '     * @param object' . PHP_EOL;
         $print .= '     */' . PHP_EOL;
         $print .= '    private $' . $this->getConn() . ';' . PHP_EOL . PHP_EOL;
+        $print .= '    /**' . PHP_EOL;
+        $print .= '     * Table name.' . PHP_EOL;
+        $print .= '     * ' . PHP_EOL;
+        $print .= '     * @param string' . PHP_EOL;
+        $print .= '     */' . PHP_EOL;
+        $print .= '    private $name;' . PHP_EOL . PHP_EOL;
         $print .= "    public function __construct() {" . PHP_EOL;
         $print .= "        parent::__construct();" . PHP_EOL;
         $print .= '        $this->' . $this->getConn() . ' = $this->load->database(\'' . $this->getConn() . '\', TRUE);' . PHP_EOL;
+        $print .= '        $this->name = \'' . $name . '\';' . PHP_EOL;
         $print .= "    }" . PHP_EOL . PHP_EOL; // end public function __construct()
         $print .= "    public function up() {" . PHP_EOL;
         $print .= '        $param = [];' . PHP_EOL . PHP_EOL;
@@ -126,10 +133,10 @@ class Seeder
             }
             $print .= "        ];" . PHP_EOL; // end $param[]
         }
-        $print .= PHP_EOL . '        $this->' . $this->getConn() . '->insert_batch(\'' . $name . '\', $param);' . PHP_EOL;
+        $print .= PHP_EOL . '        $this->' . $this->getConn() . '->insert_batch($this->name, $param);' . PHP_EOL;
         $print .= "    }" . PHP_EOL . PHP_EOL; // end public function up()
         $print .= "    public function down() {" . PHP_EOL;
-        $print .= '        $this->' . $this->getConn() . '->truncate(\'' . $name . '\');' . PHP_EOL;
+        $print .= '        $this->' . $this->getConn() . '->truncate($this->name);' . PHP_EOL;
         $print .= "    }" . PHP_EOL; // end public function down()
         $print .= "}"; // end class
 
