@@ -20,12 +20,12 @@ class App extends CI_Controller
 			return;
 		}
 
-        $this->load->library('Seeder');
+		$this->load->library('Seeder');
 		// // set custom connection, default is 'default'
 		// $this->seeder->setConn('db_post_office');
 		// // set custom path
 		// $this->seeder->setPath(APPPATH);
-        $res = $this->seeder->seed($table);
+		$res = $this->seeder->seed($table);
 
 		echo $res->message.PHP_EOL;
 		return;

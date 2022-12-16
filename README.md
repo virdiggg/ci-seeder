@@ -8,5 +8,5 @@
 
 - How to use: `php index.php <your controller name> <your function name> "tablename"`.
 ```
-cd c:/xampp/htdocs/codeigniter && php index.php app name "tablename"
+cd c:/xampp/htdocs/codeigniter && php index.php app seed "tablename"
 ```
