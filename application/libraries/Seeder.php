@@ -105,7 +105,7 @@ class Seeder
         $keys = array_keys($results[0]);
 
         // Reverse array to Descending.
-        // We don't know which incremental value this table has, so we do it manually.
+        // We don't know which incremental value this table has and which one should we use, so we do it manually.
         asort($results);
         $results = array_values($results);
 
