@@ -104,6 +104,11 @@ class Seeder
         // Array keys for column name.
         $keys = array_keys($results[0]);
 
+        // Reverse array to Descending.
+        // We don't know which incremental value this table has, so we do it manually.
+        asort($results);
+        $results = array_values($results);
+
         $print = "<?php defined('BASEPATH') OR exit('No direct script access allowed');" . PHP_EOL . PHP_EOL;
         $print .= "Class Migration_Seeder_" . $name . " extends CI_Migration {" . PHP_EOL;
         $print .= '    /**' . PHP_EOL;
