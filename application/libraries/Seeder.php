@@ -101,13 +101,41 @@ class Seeder
             ];
         }
 
-        // Array keys for column name.
-        $keys = array_keys($results[0]);
+        // Parse input as printable string.
+        $print = $this->parseInput($name, $results);
 
+        // Get the latest migration file order.
+        $count = $this->latest($this->getPath());
+
+        // Create seeder file.
+        $this->createFile($this->getPath(), $count . '_seeder_' . $name . '.php');
+
+        // Write to newly created seeder file.
+        fwrite($this->filePointer, $print . PHP_EOL);
+
+        return (object) [
+            'status' => true,
+            'message' => 'SEEDER SUCCESS.'
+        ];
+    }
+
+    /**
+     * Parse input as printable string.
+     * 
+     * @param string $name
+     * @param array  $results
+     * 
+     * @return string
+     */
+    private function parseInput($name, $results)
+    {
         // Reverse array to Descending.
         // We don't know which incremental value this table has and which one should we use, so we do it manually.
         asort($results);
         $results = array_values($results);
+
+        // Array keys for column name.
+        $keys = array_keys($results[0]);
 
         $print = "<?php defined('BASEPATH') OR exit('No direct script access allowed');" . PHP_EOL . PHP_EOL;
         $print .= "Class Migration_Seeder_" . $name . " extends CI_Migration {" . PHP_EOL;
@@ -145,19 +173,7 @@ class Seeder
         $print .= "    }" . PHP_EOL; // end public function down()
         $print .= "}"; // end class
 
-        // Get the latest migration file order.
-        $count = $this->latest($this->getPath());
-
-        // Create seeder file.
-        $this->createFile($this->getPath(), $count . '_seeder_' . $name . '.php');
-
-        // Write to newly created seeder file.
-        fwrite($this->filePointer, $print . PHP_EOL);
-
-        return (object) [
-            'status' => true,
-            'message' => 'SEEDER SUCCESS.'
-        ];
+        return $print;
     }
 
     /**
