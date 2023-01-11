@@ -39,7 +39,6 @@ class App extends CI_Controller
 			return;
 		}
 
-		$this->load->helper('str');
         $this->load->library('Seeder');
 
 		// Get all arguments passed to this function
@@ -62,7 +61,6 @@ class App extends CI_Controller
 			return;
 		}
 
-		$this->load->helper('str');
         $this->load->library('Seeder');
 
 		// Get all arguments passed to this function

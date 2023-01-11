@@ -652,9 +652,6 @@ class Seeder
 			}
 		}
 
-        // Reverse the name array.
-        asort($name);
-
         return (object) [
             'name' => join(DIRECTORY_SEPARATOR, $name), // Implode/Join array name with DIRECTORY_SEPARATOR.
             'args' => array_values(array_unique($param)), // Distinct, then rebase the arguments array.
