@@ -334,7 +334,7 @@ class Seeder
         $print .= '     */' . PHP_EOL;
         $print .= "    public function index() {" . PHP_EOL;
         $print .= '        $data = [' . PHP_EOL;
-        $print .= '            \'sub_judul\' => $this->title,' . PHP_EOL;
+        $print .= '            \'title\' => $this->title,' . PHP_EOL;
         $print .= '        ];' . PHP_EOL . PHP_EOL; // end $data
         $print .= '        $this->load->view(\'layout/wrapper\', $data);' . PHP_EOL;
         $print .= "    }" . PHP_EOL . PHP_EOL; // end public function index()
