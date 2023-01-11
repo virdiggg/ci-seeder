@@ -122,30 +122,34 @@ class Seeder
     /**
      * Create a simple controller file.
      *
-     * @param string $name   Table name
-     * @param string $folder Folder name
-     * @param bool   $param  Optional parameter
+     * @param string $fullName Table name
+     * @param array  $param    Optional parameter
      *
      * @return object
      */
-    public function controller($name = '', $folder = '', $param = [])
+    public function controller($fullName = '', $param = [])
     {
-        if (!$name) {
+        if (!$fullName) {
             return (object) [
                 'status' => false,
                 'message' => 'PARAMETER NOT FOUND',
             ];
         }
 
+        // File path is before the last slash \. If exists, add another slash.
+        $before = $this->beforeLast($fullName, '\\');
+        if ($before) {
+            $before = DIRECTORY_SEPARATOR . $before;
+        }
+
         // Set path to controllers folder
-        $this->setPath(APPPATH . 'controllers');
+        $this->setPath(APPPATH . 'controllers' . $before);
+
+        // File name is after the last slash \.
+        $name = $this->afterLast($fullName, '\\');
 
         // Ucfirst for file and class name
         $name = ucfirst(strtolower(trim($name)));
-
-        // Parse folder name
-        $folder = trim($folder);
-        $folder = $folder ? strtolower($folder) . '/' : $folder;
 
         $withResources = false;
         if (count($param) > 0) {
@@ -158,7 +162,7 @@ class Seeder
         $print = $this->parseInputController($name, $withResources);
 
         // Create seeder file.
-        $this->createFile($this->getPath(), $folder . $name . '.php');
+        $this->createFile($this->getPath(), $name . '.php');
 
         // Write to newly created seeder file.
         fwrite($this->filePointer, $print . PHP_EOL);
@@ -172,22 +176,31 @@ class Seeder
     /**
      * Create a simple model file.
      *
-     * @param string $name   Table name
-     * @param array  $param  Optional parameter
+     * @param string $fullName Table name
+     * @param array  $param    Optional parameter
      *
      * @return object
      */
-    public function model($name = '', $param = [])
+    public function model($fullName = '', $param = [])
     {
-        if (!$name) {
+        if (!$fullName) {
             return (object) [
                 'status' => false,
                 'message' => 'PARAMETER NOT FOUND',
             ];
         }
 
+        // File path is before the last slash \. If exists, add another slash.
+        $before = $this->beforeLast($fullName, '\\');
+        if ($before) {
+            $before = DIRECTORY_SEPARATOR . $before;
+        }
+
         // Set path to models folder
-        $this->setPath(APPPATH . 'models');
+        $this->setPath(APPPATH . 'models' . $before);
+
+        // File name is after the last slash \.
+        $name = $this->afterLast($fullName, '\\');
 
         // Ucfirst for file and class name
         $name = ucfirst(strtolower(trim($name)));
@@ -217,7 +230,7 @@ class Seeder
             if ($withResources) {
                 $args = ['--r'];
             }
-            $this->controller($name, '', $args);
+            $this->controller($fullName, $args);
         }
 
         return (object) [
@@ -230,7 +243,6 @@ class Seeder
      * Parse input as printable string for seeder file.
      * 
      * @param string $name
-     * @param array  $results
      * 
      * @return string
      */
@@ -615,6 +627,59 @@ class Seeder
     }
 
     /**
+     * Parse the given arguments to determine if they are name string or arguments.
+     *
+     * @param array $args
+     * 
+     * @return array
+     */
+    public function parseParam($args)
+    {
+        if (!$args) {
+            return (object) [
+                'name' => '',
+                'args' => [],
+            ];
+        }
+
+		$name = $param = [];
+		foreach ($args as $key => $arg) {
+			if ($this->startsWith($arg, '--')) {
+				$param[] = $arg;
+			} else {
+				$name[] = $arg;
+			}
+		}
+
+        // Reverse the name array.
+        asort($name);
+
+        return (object) [
+            'name' => join(DIRECTORY_SEPARATOR, $name),
+            'args' => array_values(array_unique($param)),
+        ];
+    }
+
+    /**
+     * Determine if a given string starts with a given substring. Case sensitive.
+     * Stolen from laravel helper.
+     *
+     * @param  string  $haystack
+     * @param  string|string[]  $needles
+     * @return bool
+     */
+    private function startsWith($haystack, $needles)
+    {
+        foreach ((array) $needles as $needle) {
+            if ((string) $needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get the portion of a string before the first occurrence of a given value.
      * Stolen from laravel helper.
      *
@@ -631,6 +696,29 @@ class Seeder
         $result = strstr($subject, (string) $search, true);
 
         return $result === false ? $subject : $result;
+    }
+
+    /**
+     * Get the portion of a string before the last occurrence of a given value.
+     * Stolen from laravel helper.
+     *
+     * @param  string  $subject
+     * @param  string  $search
+     * @return string
+     */
+    private function beforeLast($subject, $search)
+    {
+        if ($search === '') {
+            return $subject;
+        }
+
+        $pos = mb_strrpos($subject, $search);
+
+        if ($pos === false) {
+            return $subject;
+        }
+
+        return substr($subject, 0, $pos);
     }
 
     /**
