@@ -244,18 +244,21 @@ class Seeder
      * Parse input as printable string for seeder file.
      * 
      * @param string $name
+     * @param array  $results
      * 
      * @return string
      */
-    private function parseInputSeeder($name)
+    private function parseInputSeeder($name, $results)
     {
+        // Array keys for column name.
+        $keys = array_keys($results[0]);
+
         // Reverse array to Descending.
         // We don't know which incremental value this table has and which one should we use, so we do it manually.
         asort($results);
-        $results = array_values($results);
 
-        // Array keys for column name.
-        $keys = array_keys($results[0]);
+        // Rebase the array.
+        $results = array_values($results);
 
         $print = "<?php defined('BASEPATH') OR exit('No direct script access allowed');" . PHP_EOL . PHP_EOL;
         $print .= "Class Migration_Seeder_" . $name . " extends CI_Migration {" . PHP_EOL;
