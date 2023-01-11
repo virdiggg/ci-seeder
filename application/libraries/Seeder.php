@@ -63,9 +63,6 @@ class Seeder
     public function __construct()
     {
         $this->CI = & get_instance();
-        // This is a different connection.
-        // So don't be confused with the one we'are going to print in seeder file
-        $this->db = $this->CI->load->database($this->getConn(), TRUE);
     }
 
     /**
@@ -83,6 +80,10 @@ class Seeder
                 'message' => 'PARAMETER NOT FOUND',
             ];
         }
+
+        // This is a different connection.
+        // So don't be confused with the one we'are going to print in seeder file
+        $this->db = $this->CI->load->database($this->getConn(), TRUE);
 
         if (!$this->db->table_exists($name)) {
             return (object) [
@@ -655,8 +656,8 @@ class Seeder
         asort($name);
 
         return (object) [
-            'name' => join(DIRECTORY_SEPARATOR, $name),
-            'args' => array_values(array_unique($param)),
+            'name' => join(DIRECTORY_SEPARATOR, $name), // Implode/Join array name with DIRECTORY_SEPARATOR.
+            'args' => array_values(array_unique($param)), // Distinct, then rebase the arguments array.
         ];
     }
 
