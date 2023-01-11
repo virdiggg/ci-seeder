@@ -6,7 +6,18 @@
 
 - The example controller is `application/controllers/App.php`.
 
-- How to use: `php index.php <your controller name> <your function name> "tablename"`.
+#### How to create Seeder file: `php index.php <your controller name> <your function name> "tablename"`.
 ```
 cd c:/xampp/htdocs/codeigniter && php index.php app seed "tablename"
+```
+#### How to use Controller file: `php index.php <your controller name> <your function name> "filename" "foldername" [--args]`.
+- Add `--r` to generate resources. Optional.
+```
+cd c:/xampp/htdocs/codeigniter && php index.php app seed "filename" "foldername" --r
+```
+#### How to use Model file: `php index.php <your controller name> <your function name> "filename" [--args]`.
+- Add `--r` to generate resources. Optional.
+- Add `--c` to generate its controller file as well. Optional.
+```
+cd c:/xampp/htdocs/codeigniter && php index.php app seed "filename" "foldername" --r --c
 ```
